@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: nginx
+  name: nginx-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: nginx
+  template:
+    metadata:
+      labels:
+        run: nginx
+    spec:
+    #volume mount 
+      volumes:
+      - name: secret-volume
+        secret:
+          secretName: secret-demo
+      containers:
+      - image: nginx
+        name: nginx
+        #environment variable
+        env:
+        - name: myusername
+          valueFrom:
+            secretKeyRef:
+             name: secret-demo
+             key: username
+        
+        volumeMounts:
+        - name: secret-volume
+          mountPath: /mydata
